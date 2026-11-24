@@ -2,7 +2,7 @@
 
 [![Licencia: MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-blue.svg)](LICENSE)
 [![Manuscrito: CC BY 4.0](https://img.shields.io/badge/manuscrito-CC%20BY%204.0-lightgrey.svg)](LICENSE-CC-BY-4.0.txt)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24487582.svg)](https://doi.org/10.5281/zenodo.24487582)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24507277.svg)](https://doi.org/10.5281/zenodo.24507277)
 
 Este repositorio contiene el código, la configuración, los artefactos de
 resultados y el manuscrito de un estudio de simulación que evalúa si una señal
@@ -207,16 +207,16 @@ metadatos están en [`CITATION.cff`](CITATION.cff).
   title   = {Aprendizaje in silico de la optimización AV/VV en TRC a partir de la impedancia intracardíaca},
   year    = {2026},
   version = {1.1.1},
-  doi     = {10.5281/zenodo.24487582},
+  doi     = {10.5281/zenodo.24507277},
   url     = {https://github.com/ForTheLoveOfPointers/heart-vanosta},
   license = {MIT}
 }
 ```
 
-La versión `v1.1.1` está archivada en Zenodo bajo el *DOI conceptual*
-[`10.5281/zenodo.24487582`](https://doi.org/10.5281/zenodo.24487582), que remite
-siempre a la última versión. El DOI específico de `v1.1.1` se anuncia en la
-versión publicada en GitHub.
+La versión `v1.1.1` está archivada en Zenodo con el DOI
+[`10.5281/zenodo.24507277`](https://doi.org/10.5281/zenodo.24507277). Ese DOI
+apunta exactamente a `v1.1.1`; para citar siempre la última versión utilice el
+*DOI conceptual* [`10.5281/zenodo.24487582`](https://doi.org/10.5281/zenodo.24487582).
 
 ## Licencias
 
