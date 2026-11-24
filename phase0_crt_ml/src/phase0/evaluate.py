@@ -1,28 +1,13 @@
-"""Evaluation metrics, ablations and learning curves."""
+"""Evaluation metrics and feature masks."""
 
 from __future__ import annotations
 
-from typing import Dict, List, Mapping
+from typing import Dict, List
 
 import numpy as np
 from scipy.stats import spearmanr
 
-from .dataset import Dataset
 from .models.pairwise import PairwiseRanker
-
-
-def split_groups(groups: np.ndarray, test_frac: float = 0.3, seed: int = 0):
-    ids = np.unique(groups)
-    if len(ids) < 2:
-        raise ValueError("Need at least two patient groups to split.")
-    rng = np.random.default_rng(seed)
-    rng.shuffle(ids)
-    n_test = max(1, int(round(test_frac * len(ids))))
-    test_ids = set(ids[:n_test].tolist())
-    train_ids = set(ids[n_test:].tolist())
-    train_mask = np.isin(groups, list(train_ids))
-    test_mask = np.isin(groups, list(test_ids))
-    return train_mask, test_mask
 
 
 def sensor_feature_masks(feature_names: List[str]) -> Dict[str, np.ndarray]:
@@ -133,7 +118,7 @@ def metrics_from_scores(
 
 def evaluate_ranker(
     ranker: PairwiseRanker,
-    ds: Dataset,
+    ds,
     feature_mask: np.ndarray | None = None,
     eval_mask: np.ndarray | None = None,
     top_k: int = 3,
@@ -177,62 +162,3 @@ def three_way_split(
     val_mask = np.isin(groups, list(val_ids))
     test_mask = np.isin(groups, list(test_ids))
     return train_mask, val_mask, test_mask
-
-
-def run_ablations(
-    ds: Dataset,
-    train_mask: np.ndarray,
-    test_mask: np.ndarray,
-    model_kwargs: Mapping[str, float],
-    top_k: int = 3,
-    regret_threshold: float = 0.02,
-) -> Dict[str, Dict[str, float]]:
-    masks = sensor_feature_masks(ds.feature_names)
-    out: Dict[str, Dict[str, float]] = {}
-    for name, mask in masks.items():
-        ranker = PairwiseRanker(**model_kwargs).fit(
-            ds.X[train_mask][:, mask], ds.y[train_mask], ds.groups[train_mask]
-        )
-        out[name] = evaluate_ranker(
-            ranker,
-            ds,
-            feature_mask=mask,
-            eval_mask=test_mask,
-            top_k=top_k,
-            regret_threshold=regret_threshold,
-        )
-    return out
-
-
-def learning_curve(
-    ds: Dataset,
-    train_mask: np.ndarray,
-    test_mask: np.ndarray,
-    sizes: List[int],
-    model_kwargs: Mapping[str, float],
-    seed: int = 0,
-    top_k: int = 3,
-    regret_threshold: float = 0.02,
-) -> List[Dict[str, float]]:
-    train_ids = np.unique(ds.groups[train_mask])
-    rng = np.random.default_rng(seed)
-    rng.shuffle(train_ids)
-
-    curve: List[Dict[str, float]] = []
-    for n in sizes:
-        n = min(int(n), len(train_ids))
-        if n < 1:
-            continue
-        chosen = train_ids[:n]
-        m = np.isin(ds.groups, chosen)
-        ranker = PairwiseRanker(**model_kwargs).fit(ds.X[m], ds.y[m], ds.groups[m])
-        metrics = evaluate_ranker(
-            ranker,
-            ds,
-            eval_mask=test_mask,
-            top_k=top_k,
-            regret_threshold=regret_threshold,
-        )
-        metrics["n_train_patients"] = float(n)
-        curve.append(metrics)
-    return curve

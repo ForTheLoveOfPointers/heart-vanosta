@@ -2,8 +2,12 @@
 
 These features are the input to the linear ranking model.  They are
 intentionally interpretable and cheap.  The project uses a single device sensor:
-intracardiac impedance.  Heart rate, intrinsic AV and QRS are device context,
-not waveform sensors.
+intracardiac impedance.  Heart rate, intrinsic AV and QRS are context, not
+waveform sensors.
+
+In this in-silico study the context features are the *true* simulator
+parameters, not device estimates.  The ``_est`` suffix in the keys is kept for
+artifact compatibility.
 """
 
 from __future__ import annotations
@@ -75,8 +79,9 @@ def extract_features(
     out["imp_ejection_time"] = float(ejection)
 
     out["ctx_hr"] = float(patient.hr_bpm)
-    # Device-derived context: intrinsic AV conduction and QRS can be measured
-    # by the device (e.g. by temporarily inhibiting pacing).
+    # Context features are the true simulated parameters, not device estimates
+    # (the ``_est`` suffix is kept for artifact compatibility).  A deployed
+    # device would have to estimate intrinsic AV and QRS with some error.
     out["ctx_intrinsic_av_est"] = float(patient.intrinsic_av_ms)
     out["ctx_qrs_est"] = float(patient.qrs_ms)
 
@@ -119,13 +124,20 @@ def patient_normalize(
     """Standardize selected features within each patient across settings.
 
     A device sweep evaluates all AV/VV candidates for one patient.  Centering
-    and scaling a signal feature across that sweep removes patient/session gain
-    and offset while retaining how the feature changes with the setting.  No
-    labels are used.  Context and setting columns are left untouched.
+    and scaling a signal feature across that sweep removes the sweep-level mean
+    and scale of the impedance features while retaining how they change with the
+    setting.  No labels are used.  Context and setting columns are left
+    untouched.
+
+    The benchmark redraws gain, offset, noise and drift independently for every
+    beat, so this is not equivalent to removing a fixed session calibration:
+    it removes the mean nuisance level of the 56-setting sweep.
 
     Interaction terms are recomputed after their source columns are
     standardized, so a normalized single-sensor model does not mix standardized
-    base features with raw-scale ``ix_*_x_imp_*`` terms.
+    base features with raw-scale ``ix_*_x_imp_*`` terms.  The left operand is
+    matched by longest base-feature name because some setting columns already
+    contain ``_x_`` (for example ``set_av_x_vv``).
     """
     X = np.asarray(X, dtype=np.float64).copy()
     groups = np.asarray(groups)
@@ -137,12 +149,23 @@ def patient_normalize(
     if not np.any(cols):
         return X
     name_to_idx = {name: i for i, name in enumerate(names)}
+    base_names = sorted(
+        (n for n in names if not n.startswith("ix_")), key=len, reverse=True
+    )
     interaction_cols = []
     for i, name in enumerate(names):
         if not name.startswith("ix_") or "_x_" not in name:
             continue
-        left, right = name[3:].split("_x_", 1)
-        if left in name_to_idx and right in name_to_idx:
+        body = name[3:]
+        left = None
+        for base in base_names:
+            if body.startswith(base + "_x_"):
+                left = base
+                break
+        if left is None:
+            continue
+        right = body[len(left) + 3 :]
+        if right in name_to_idx:
             interaction_cols.append((i, name_to_idx[left], name_to_idx[right]))
     for group in np.unique(groups):
         mask = groups == group

@@ -11,9 +11,9 @@ authors:
     given-names: Lucas
     email: 2000.costalucas@gmail.com
     affiliation: "Independent Researcher"
-version: 1.0.1
+version: 1.1.0
 date-released: "2026-11-24"
-doi: "10.5281/zenodo.24487583"
+doi: "10.5281/zenodo.24487582"
 license: MIT
 license-url: "https://github.com/ForTheLoveOfPointers/heart-vanosta/blob/main/LICENSE"
 repository-code: "https://github.com/ForTheLoveOfPointers/heart-vanosta"

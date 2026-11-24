@@ -77,4 +77,4 @@ PY
 
 echo "Run the experiments with:"
 echo "  $VENV_BIN/python scripts/smoke_test.py"
-echo "  $VENV_BIN/python scripts/run_phase0.py --tag circadapt"
+echo "  $VENV_BIN/python scripts/run_benchmark.py --patients 500 --tag bench500_imp"

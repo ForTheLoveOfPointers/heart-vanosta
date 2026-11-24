@@ -171,10 +171,6 @@ def ablations(reports: Path, figures: Path) -> Path:
     neg = gbt.get("results", {}).get("gbt_negative_control")
     if neg is not None:
         rows.append(("Etiquetas\nbarajadas", neg["source_test"]))
-    else:
-        neg_path = reports / "benchmark_negative_control_bench500_imp.json"
-        if neg_path.exists():
-            rows.append(("Etiquetas\nbarajadas", _load_json(neg_path)["metrics"]))
 
     labels = [r[0] for r in rows]
     near = [r[1]["near_optimal_fraction"] for r in rows]

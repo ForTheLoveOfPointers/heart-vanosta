@@ -22,7 +22,8 @@ def observe(
     """Generate the device impedance recording for one beat.
 
     Only physiology is used; ``beat.labels`` is never read here.  When
-    ``domain`` is given, one nuisance-parameter set is sampled for this beat.
+    ``domain`` is given, one nuisance-parameter set is sampled independently for
+    this beat (see the module docstring of ``phase0.sensors.impedance``).
     """
     params = None if domain is None else sample_domain(domain, rng)
     impedance = synth_impedance(

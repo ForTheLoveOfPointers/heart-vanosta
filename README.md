@@ -2,7 +2,7 @@
 
 [![Licencia: MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-blue.svg)](LICENSE)
 [![Manuscrito: CC BY 4.0](https://img.shields.io/badge/manuscrito-CC%20BY%204.0-lightgrey.svg)](LICENSE-CC-BY-4.0.txt)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24487583.svg)](https://doi.org/10.5281/zenodo.24487583)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24487582.svg)](https://doi.org/10.5281/zenodo.24487582)
 
 Este repositorio contiene el código, la configuración, los artefactos de
 resultados y el manuscrito de un estudio de simulación que evalúa si una señal
@@ -25,9 +25,10 @@ Se generaron 500 pacientes virtuales con el modelo cardiovascular **CircAdapt**
 paciente (28.000 observaciones etiquetadas; 3 latidos por programación, se
 analiza el último en estado estacionario). Un modelo
 fenomenológico de observación agregó ganancia, offset, ruido y deriva de línea
-base a la impedancia. Se extrajeron **42 features interpretables** y el problema
-se formuló como *learning-to-rank*: cada paciente es una consulta y sus 56
-programaciones son los documentos a ordenar.
+base a la impedancia; esos parámetros parásitos se redibujan en cada latido, lo
+que representa un caso deliberadamente adverso. Se extrajeron **42 features
+interpretables** y el problema se formuló como *learning-to-rank*: cada paciente
+es una consulta y sus 56 programaciones son los documentos a ordenar.
 
 Se compararon un ranker lineal por pares, LambdaMART, una CNN 1D pequeña,
 variantes híbridas con embeddings de la CNN y un *blend* ponderado por
@@ -50,14 +51,13 @@ heart-vanosta/
     ├── configs/default.yaml     # grilla AV/VV, rangos de pacientes, hiperparámetros
     ├── src/phase0/
     │   ├── benchmark.py         # dataset de benchmark
-    │   ├── dataset.py           # dataset del experimento inicial
-    │   ├── evaluate.py          # métricas, splits, ablaciones
+    │   ├── evaluate.py          # métricas y splits
     │   ├── features.py          # 42 features de impedancia + contexto
     │   ├── models/              # ranker lineal, LambdaMART, CNN
     │   ├── physiology/          # adaptador CircAdapt
     │   └── sensors/             # modelo de observación de impedancia
-    ├── scripts/                 # pipeline, ablaciones, figuras y utilidades
-    ├── tests/                   # 22 tests
+    ├── scripts/                 # pipeline, figuras y utilidades
+    ├── tests/                   # 23 tests
     ├── reports/                 # artefactos curados de la corrida primaria
     ├── requirements.txt
     ├── README.md                # documentación detallada en español
@@ -92,7 +92,7 @@ Salida esperada del smoke test:
 
 ```text
 SMOKE OK
-samples=36 features=42
+samples=27 features=42
 ```
 
 ### Nota para macOS: torch y LightGBM
@@ -132,22 +132,20 @@ cd phase0_crt_ml
 .venv/bin/python scripts/run_benchmark.py \
   --patients 500 --signal-length 256 --tag bench500_imp --threads 8
 
-# 2. Escalera de modelos (sin normalización within-patient)
+# 2. Escalera de modelos (sin normalización within-patient; incluye el control
+#    negativo con etiquetas barajadas intra-paciente)
 .venv/bin/python scripts/run_gbt_benchmark.py \
   --dataset-tag bench500_imp --out-tag ladder500_imp_reconcile \
   --patient-normalize none --threads 8
 
-# 3. Control negativo con etiquetas barajadas intra-paciente
-.venv/bin/python scripts/negative_control.py --tag bench500_imp --seed 0
-
-# 4. Curva de aprendizaje
+# 3. Curva de aprendizaje
 .venv/bin/python scripts/benchmark_learning_curve.py \
   --tag bench500_imp --threads 8
 
-# 5. Reconciliación del protocolo de dominio desplazado (2 % y 5 %)
+# 4. Reconciliación del protocolo de dominio desplazado (2 % y 5 %)
 .venv/bin/python scripts/reconcile_shift_protocol.py
 
-# 6. Figuras del manuscrito (se regeneran desde los reportes)
+# 5. Figuras del manuscrito (se regeneran desde los reportes)
 .venv/bin/python scripts/make_manuscript_figures.py
 ```
 
@@ -179,15 +177,18 @@ casi óptimo (Spearman −0.149), lo que descarta una fuga de información obvia
 ## Qué prueba y qué no prueba
 
 **Prueba** que, en este simulador, la impedancia contiene información suficiente
-para ordenar programaciones AV/VV mejor que el azar y mejor que el contexto
-solo, y que un ranker lineal simple conserva gran parte del rendimiento bajo un
-desplazamiento extremo del sensor.
+para ordenar programaciones AV/VV mejor que el azar y mejor que el modelo sin
+onda (contexto y programación), y que un ranker lineal simple conserva gran
+parte del rendimiento bajo un desplazamiento extremo del sensor.
 
 **No prueba** que la impedancia real permita elegir AV/VV con precisión clínica.
 El modelo de impedancia es fenomenológico y no captura posición del electrodo,
 hematocrito, postura, respiración ni fibrosis. El óptimo VV está influido por
-una penalización de resincronización. La validación requiere un estudio
-prospectivo con impedancia real y una referencia hemodinámica independiente.
+una penalización de resincronización. Las features de contexto (AV intrínseco,
+QRS, frecuencia cardíaca) son los valores verdaderos del simulador y no
+estimaciones del dispositivo, de modo que el piso sin onda es optimista.
+La validación requiere un estudio prospectivo con impedancia real y una
+referencia hemodinámica independiente.
 
 Más limitaciones en el manuscrito y en `phase0_crt_ml/README.md`.
 
@@ -201,17 +202,17 @@ metadatos están en [`CITATION.cff`](CITATION.cff).
   author  = {Costa, Lucas},
   title   = {Aprendizaje in silico de la optimización AV/VV en TRC a partir de la impedancia intracardíaca},
   year    = {2026},
-  version = {1.0.1},
-  doi     = {10.5281/zenodo.24487583},
+  version = {1.1.0},
+  doi     = {10.5281/zenodo.24487582},
   url     = {https://github.com/ForTheLoveOfPointers/heart-vanosta},
   license = {MIT}
 }
 ```
 
-La versión archivada de este release está en Zenodo con DOI
-[`10.5281/zenodo.24487583`](https://doi.org/10.5281/zenodo.24487583). Ese DOI
-apunta exactamente a `v1.0.1`; para citar siempre la última versión usá el
-*concept DOI* [`10.5281/zenodo.24487582`](https://doi.org/10.5281/zenodo.24487582).
+La versión archivada se identifica con el *concept DOI*
+[`10.5281/zenodo.24487582`](https://doi.org/10.5281/zenodo.24487582), que apunta
+siempre a la última versión. El DOI específico de `v1.1.0` se anuncia en la
+release de GitHub una vez que Zenodo lo asigna.
 
 ## Licencias
 

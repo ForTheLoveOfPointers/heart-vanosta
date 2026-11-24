@@ -7,7 +7,10 @@ For each (patient, AV, VV) it stores:
 - the ground-truth stroke work and patient id.
 
 The impedance observation is randomised according to a ``SignalDomain``.  The
-physiology and the labels never see the domain parameters.
+physiology and the labels never see the domain parameters.  The nuisance
+parameters are redrawn for every beat, so each of the 56 settings of a patient
+sees an independent gain/offset/noise/drift draw; this is a deliberately harsh
+observation model, not a fixed per-session calibration.
 """
 
 from __future__ import annotations
@@ -19,7 +22,6 @@ from typing import Dict, List, Sequence
 
 import numpy as np
 
-from .dataset import sample_patient
 from .features import extract_features
 from .physiology.base import Simulator
 from .sensors import resample_signals
@@ -73,6 +75,37 @@ class BenchmarkDataset:
             feature_names=[str(x) for x in data["feature_names"]],
             meta=json.loads(str(data["meta"])),
         )
+
+
+def sample_patient(
+    patient_id: int, cfg: dict, rng: np.random.Generator
+) -> PatientParams:
+    """Draw one virtual patient from the configured ranges."""
+    r = cfg["simulation"]["patient_ranges"]
+
+    def u(key: str) -> float:
+        lo, hi = r[key]
+        return float(rng.uniform(lo, hi))
+
+    return PatientParams(
+        patient_id=patient_id,
+        hr_bpm=u("hr_bpm"),
+        contractility=u("contractility"),
+        lv_viability=u("lv_viability"),
+        septal_viability=u("septal_viability"),
+        lateral_viability=u("lateral_viability"),
+        rv_viability=u("rv_viability") if "rv_viability" in r else 1.0,
+        preload=u("preload"),
+        afterload=u("afterload"),
+        intrinsic_av_ms=u("intrinsic_av_ms"),
+        qrs_ms=u("qrs_ms"),
+        dyssynchrony_ms=u("dyssynchrony_ms"),
+        lead_lv_delay_ms=u("lead_lv_delay_ms"),
+        lead_rv_delay_ms=u("lead_rv_delay_ms"),
+        av_block=bool(rng.random() < cfg["simulation"]["av_block_prob"]),
+        biventricular_pacing=True,
+        seed=int(rng.integers(0, 2**31 - 1)),
+    )
 
 
 def sample_patients(cfg: dict, n_patients: int, seed: int = 0) -> List[PatientParams]:

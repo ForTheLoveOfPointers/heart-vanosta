@@ -59,13 +59,13 @@ Resultado esperado del smoke test:
 
 ```text
 SMOKE OK
-samples=36 features=42
+samples=27 features=42
 ```
 
 Y de la suite de tests:
 
 ```text
-22 passed
+23 passed
 ```
 
 ### Nota para macOS: conflicto de `libomp` entre torch y LightGBM
@@ -108,23 +108,20 @@ Equivalente paso a paso:
 .venv/bin/python scripts/run_benchmark.py \
   --patients 500 --signal-length 256 --tag bench500_imp --threads 8
 
-# 2. Escalera: LambdaMART, embeddings CNN, híbridos y blend
+# 2. Escalera: LambdaMART, embeddings CNN, híbridos, blend y control negativo
 .venv/bin/python scripts/run_gbt_benchmark.py \
   --dataset-tag bench500_imp \
   --out-tag ladder500_imp_reconcile \
   --patient-normalize none --threads 8
 
-# 3. Control negativo (etiquetas barajadas dentro de cada paciente)
-.venv/bin/python scripts/negative_control.py --tag bench500_imp --seed 0
-
-# 4. Curva de aprendizaje
+# 3. Curva de aprendizaje
 .venv/bin/python scripts/benchmark_learning_curve.py \
   --tag bench500_imp --threads 8
 
-# 5. Reconciliación del protocolo sellado a 2 % y 5 %
+# 4. Reconciliación del protocolo sellado a 2 % y 5 %
 .venv/bin/python scripts/reconcile_shift_protocol.py
 
-# 6. Figuras del manuscrito
+# 5. Figuras del manuscrito
 .venv/bin/python scripts/make_manuscript_figures.py
 ```
 
@@ -142,7 +139,6 @@ Artefactos primarios del manuscrito:
 | Escalera + ICs + blend (primario) | `reports/gbt_report_ladder500_imp_reconcile.json`, `reports/gbt_summary_ladder500_imp_reconcile.{md,png}` |
 | Scores por modelo (auditoría) | `reports/scores_ladder500_imp_reconcile.npz` |
 | Protocolo sellado a 2 % y 5 % | `reports/reconcile_shift_protocol.json` |
-| Control negativo | `reports/benchmark_negative_control_bench500_imp.json` |
 | Curva de aprendizaje | `reports/benchmark_learning_curve_bench500_imp.{json,png}` |
 | Figuras del manuscrito | `manuscript/figures/{response_surface,model_comparison,learning_curve,ablations}.png` |
 
@@ -153,9 +149,8 @@ Las cifras primarias son las de la corrida `ladder500_imp_reconcile`;
 primaria sin normalización.
 
 El control negativo citado en el manuscrito es el del ladder (GBT con etiquetas
-barajadas: 0.080 y Spearman −0.149). El archivo
-`benchmark_negative_control_bench500_imp.json` es un control lineal independiente
-(0.067 y −0.007) que se conserva como verificación adicional.
+barajadas: 0.080 y Spearman −0.149); se genera dentro de
+`run_gbt_benchmark.py` y no requiere un paso aparte.
 
 ## 5. Compilación del manuscrito
 
@@ -166,14 +161,13 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error preprint_es.tex
 
 La fuente es `manuscript/preprint_es.tex`; las referencias están en
 `manuscript/references.bib` y las figuras en `manuscript/figures/`.
-`manuscript/preprint.md` es solo un esqueleto de trabajo y no se publica.
 
 ## 6. Qué se versiona y qué se archiva
 
 Se versiona en Git:
 
 - código (`src/`), scripts, tests, `configs/`, `conftest.py`, `requirements.txt`;
-- `README.md`, `REPRODUCING.md`, `RESEARCH_PLAN.md`, `manuscript/`;
+- `README.md`, `REPRODUCING.md`, `manuscript/`;
 - artefactos curados: `.md`, `.json`, `.png` y `scores_*.npz` de `reports/`;
 - `pip-freeze.txt`, `environment.txt`, `CITATION.cff`, licencias.
 

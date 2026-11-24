@@ -17,7 +17,8 @@ acelerómetro.
 1. Genera pacientes virtuales con CircAdapt (`VanOsta2024`).
 2. Barre una grilla AV × VV por paciente.
 3. Simula una señal de impedancia intracardíaca con ruido, deriva, ganancia y
-   offset variables.
+   offset redibujados en cada latido (modelo de observación deliberadamente
+   adverso).
 4. Extrae 42 features interpretables de impedancia + contexto + programación.
 5. Entrena un ranker lineal pairwise para ordenar programaciones.
 6. Evalúa en dominio fuente y en un dominio de impedancia desplazado.
@@ -31,8 +32,7 @@ parámetros de ruido del sensor.
 ```text
 src/phase0/
 ├── benchmark.py          # dataset con impedancia cruda y features
-├── dataset.py            # dataset simple para el experimento inicial
-├── evaluate.py           # métricas, splits, ablaciones
+├── evaluate.py           # métricas y splits
 ├── features.py           # 42 features de impedancia + contexto
 ├── models/               # ranker pairwise, LambdaMART y CNN
 ├── physiology/           # adaptador CircAdapt
@@ -44,14 +44,10 @@ src/phase0/
 scripts/
 ├── run_benchmark.py            # dataset + baseline linear/CNN
 ├── run_gbt_benchmark.py        # escalera LambdaMART/híbridos/blend
-├── negative_control.py         # control con etiquetas barajadas
 ├── benchmark_learning_curve.py # curva de aprendizaje
 ├── reconcile_shift_protocol.py # protocolo de dominio desplazado sellado
 ├── make_manuscript_figures.py  # figuras del manuscrito
-├── analyze_benchmark.py
-├── analyze_linear_benchmark.py
-├── run_phase0.py
-├── smoke_test.py
+├── smoke_test.py               # verificación mínima de CircAdapt
 └── setup_circadapt.sh
 ```
 
@@ -182,22 +178,25 @@ congelado en origen evaluado una sola vez en el dominio desplazado.
 Como cota superior se reporta además un *bound* de adaptación (CV agrupada por
 paciente dentro del dominio desplazado): 0.667 casi óptimo / 0.0214 regret,
 prácticamente igual al modelo entrenado en origen (0.640 / 0.0217). La
-normalización within-patient tampoco recupera la caída (0.627). Es decir, el
-desplazamiento es principalmente **pérdida de información** (ruido y deriva),
-no una transformación de calibración recuperable; entrenar con el dominio
+normalización within-patient tampoco recupera la caída: sobre el modelo
+entrenado en origen da 0.560 al 2 %; adaptada al destino llega a 0.640, sin
+superar de forma consistente la cota sin normalización. Es decir, el
+desplazamiento es principalmente **pérdida de información** (más ruido
+y deriva, con una calibración redibujada en cada latido) y no un offset fijo de
+sesión que la estandarización pudiera deshacer; entrenar con el dominio
 desplazado sería fuga de información sin beneficio real. Si en el futuro se
 construye una variante robusta, debe entrenarse con *domain randomization*
 sobre un superconjunto y evaluarse en un tercer dominio desplazado no usado en
-el entrenamiento (detalle en `RESEARCH_PLAN.md`, sección 5c).
+el entrenamiento.
 
 ## Qué prueba y qué no prueba
 
 Prueba que, en este modelo sintético, la impedancia contiene información
 suficiente para ordenar programaciones AV/VV mejor que el azar y mejor que el
-contexto solo. La normalización within-patient es transductiva (requiere el
-barrido completo de 56 programaciones) y se reporta solo como análisis de
-sensibilidad: no recupera la caída bajo el desplazamiento y no forma parte del
-baseline de un solo latido.
+modelo sin onda (contexto y programación). La normalización within-patient es
+transductiva (requiere el barrido completo de 56 programaciones) y se reporta
+solo como análisis de sensibilidad: no recupera la caída bajo el desplazamiento
+y no forma parte del baseline de un solo latido.
 
 No prueba que la impedancia real de un paciente permita elegir AV/VV con
 precisión clínica. El modelo de impedancia es fenomenológico y el óptimo VV está
@@ -213,6 +212,10 @@ hemodinámica.
 - La impedancia real depende de posición del electrodo, hematocrito, postura,
   respiración y fibrosis; el modelo no captura toda esa variabilidad.
 - El óptimo VV sigue siendo la parte más débil del simulador.
+- Las features de contexto (AV intrínseco, QRS, frecuencia cardíaca) son los
+  valores verdaderos del simulador, no estimaciones del dispositivo; un
+  dispositivo real las estimaría con error, de modo que el piso sin onda
+  es optimista.
 - La normalización within-patient no es aplicable a decisiones con un solo
   latido: requiere conocer todas las programaciones candidatas del paciente.
 

@@ -29,25 +29,22 @@ fi
 
 step() { date "+[%Y-%m-%d %H:%M:%S] $*"; }
 
-step "1/6 dataset + benchmark lineal/CNN"
+step "1/5 dataset + benchmark lineal/CNN"
 "$PY" scripts/run_benchmark.py \
   --patients 500 --signal-length 256 --tag bench500_imp --threads "$THREADS"
 
-step "2/6 escalera de modelos"
+step "2/5 escalera de modelos"
 "$PY" scripts/run_gbt_benchmark.py \
   --dataset-tag bench500_imp --out-tag ladder500_imp_reconcile \
   --patient-normalize none --threads "$THREADS"
 
-step "3/6 control negativo"
-"$PY" scripts/negative_control.py --tag bench500_imp --seed 0
-
-step "4/6 curva de aprendizaje"
+step "3/5 curva de aprendizaje"
 "$PY" scripts/benchmark_learning_curve.py --tag bench500_imp --threads "$THREADS"
 
-step "5/6 protocolo de dominio desplazado sellado"
+step "4/5 protocolo de dominio desplazado sellado"
 "$PY" scripts/reconcile_shift_protocol.py
 
-step "6/6 figuras del manuscrito"
+step "5/5 figuras del manuscrito"
 "$PY" scripts/make_manuscript_figures.py
 
 step "Listo. Artefactos en reports/ y manuscript/figures/."

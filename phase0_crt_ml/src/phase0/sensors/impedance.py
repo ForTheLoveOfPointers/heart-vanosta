@@ -2,8 +2,9 @@
 
 Conductance-catheter logic: conductance is approximately affine in volume,
 G(t) = offset + gain * V(t), and impedance is Z(t) = 1 / G(t).  Gain and offset
-are patient/session specific and noisy, which is exactly the nuisance the model
-has to be robust to.
+stand in for patient/session calibration nuisance; in the benchmark they are
+redrawn per beat, which models a worst case in which calibration is not stable
+across the AV/VV sweep.
 
 The optional ``params`` argument lets the benchmark randomise that nuisance.
 """

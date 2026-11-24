@@ -11,8 +11,8 @@ the saved patient-level split), then trains and compares:
 - LambdaMART on CNN embeddings (encoder only),
 - hybrid LambdaMART on features + CNN embeddings.
 
-This implements the RESEARCH_PLAN.md model ladder on the primary baseline
-(no within-patient normalization).
+This implements the model ladder reported in the manuscript on the primary
+baseline (no within-patient normalization).
 """
 
 from __future__ import annotations

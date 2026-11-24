@@ -59,7 +59,7 @@ de árboles y de aprendizaje profundo bajo un desplazamiento sellado del dominio
 \textbf{Métodos.} Se generaron 500 pacientes virtuales con el modelo CircAdapt
 (VanOsta2024) y barridos de 8 ajustes AV $\times$ 7 ajustes VV por paciente
 (56 ajustes; 28\,000 observaciones etiquetadas), con tres latidos simulados por
-ajuste (se analiza el último, en estado estacionario). Al modelo de sensor se le añadió ganancia,
+ajuste (se analiza el último, asumido en estado estacionario). Al modelo de sensor se le añadió ganancia,
 desplazamiento de línea base y ruido, siguiendo un modelo fenomenológico con dos dominios disjuntos. Se extrajeron 42
 características interpretables de impedancia, contexto y ajuste, y planteamos la
 optimización como un problema del tipo (\emph{learning-to-rank}). En particular, para comprobar la efectividad del método se usaron varios modelos. Entre estos contamos con un modelo de ordenación lineal por pares, LambdaMART, una CNN de 1D pequeña, variantes híbridas con \emph{embeddings} de la CNN y una mezcla de ordenaciones ponderada por validación. Los modelos se entrenaron
@@ -68,14 +68,14 @@ pacientes cuyo ajuste predicho no distaba más del 2\,\% del mejor trabajo sist�
 de impedancia deliberadamente extremo y disjunto.
 
 \textbf{Resultados.} El modelo de ordenación lineal seleccionó un ajuste casi
-óptimo (dentro del 2\,\%) en el 64.0\,\% de los pacientes de prueba en un dominio sin señal degradada
-(pérdida media 1.8\,\%) y en el 64.0\,\% bajo señal degradada; con la
+óptimo (dentro del 2\,\%) en el 64.0\,\% de los pacientes de prueba en el dominio de origen
+(pérdida media 1.8\,\%) y en el 64.0\,\% bajo el desplazamiento del sensor; con la
 tolerancia del 5\,\% estos valores fueron 88.0\,\% y 86.7\,\%. El modelo de ordenación lineal, combinado con las
-\emph{embeddings} de la CNN alcanzó el 80.0\,\% al 2\,\% (pérdida 1.09\,\%) sin señal degradada y el 94.7\,\% al 5\,\%, con valores bajo degradación de la señal del
-68.0\,\% al 2\,\%, y de 89.3\,\% al 5\,\%. Una mezcla ponderada por validación
+\emph{embeddings} de la CNN alcanzó el 80.0\,\% al 2\,\% (pérdida 1.09\,\%) en el dominio de origen y el 94.7\,\% al 5\,\%, con valores bajo el desplazamiento del
+sensor del 68.0\,\% al 2\,\%, y de 89.3\,\% al 5\,\%. Una mezcla ponderada por validación
 seleccionó ese mismo modelo (80.0\,\%/68.0\,\% al 2\,\%;
 94.7\,\%/89.3\,\% al 5\,\%). Un
-modelo solo con contexto, sin características de la onda, alcanzó el 49.3\,\% al
+modelo sin características de la onda (contexto y programación) alcanzó el 49.3\,\% al
 2\,\% y el 68.0\,\% al 5\,\% en ambos dominios, y un control negativo con
 etiquetas permutadas se redujo al 8.0\,\%.
 
@@ -102,7 +102,7 @@ contractilidad SonR, que ajusta semanalmente los intervalos AV y VV, resultó no
 \citep{brugada2016,singh2017}. Por otra parte, la medición de ruidos cardíacos integrada en
 el dispositivo con aprendizaje automático puede estimar el óptimo AV con una
 precisión comparable a la de los métodos existentes, pero la señal se degrada considerablemente debido al movimiento y ruido ambiental, así que un subconjunto de
-pacientes no aporta datos utilizables \citep{westphal2023}. No está del todo claro si un mejor micrófono capataría menos ruido, por lo que la limitación no se
+pacientes no aporta datos utilizables \citep{westphal2023}. No está del todo claro si un mejor micrófono captaría menos ruido, por lo que la limitación no se
 resuelve de forma evidente con mejor hardware.
 
 La impedancia intracardíaca resulta atractiva porque ya es registrada por la mayoría
@@ -113,7 +113,7 @@ ha establecido si una onda de impedancia realista y ruidosa contiene
 información suficiente para un optimizador basado en datos, ni cómo se comporta
 un modelo de este tipo cuando cambia la calibración del sensor.
 
-El presente estudio \emph{in silico} se realizó con la intención de responder a tres interrogantes relacionadas a la problemática:
+El presente estudio \emph{in silico} se realizó con la intención de responder a tres interrogantes relacionados con la problemática:
 \begin{enumerate}[leftmargin=1.5em,itemsep=0.2em]
   \item Si acaso es aprendible la optimización AV/VV a partir de una señal
         de impedancia.
@@ -143,14 +143,17 @@ desincronía 20--100~ms; y retrasos de electrodo VI/VD 10--60~ms y 5--25~ms. Se
 aplicó bloqueo AV con probabilidad 0.30.
 
 Cada paciente se barrió sobre 8 retrasos AV (80--300~ms) y 7 retrasos VV
-($-$60 a $+$120~ms), lo que da 56 ajustes por paciente y 28\,000 en 500 pacientes. Se simularon tres latidos por ajuste y se exportó el último (estado estacionario) para la extracción de características. En el
+($-$60 a $+$120~ms), lo que da 56 ajustes por paciente y 28\,000 en 500 pacientes. Se simularon tres latidos por ajuste y se exportó el último (asumido en estado estacionario) para la extracción de características. En el
 simulador se incluyó una penalización por resincronización VV (intensidad 1.0).
 
 \subsection{Modelo de observación de la impedancia intracardíaca}
 
 Un modelo fenomenológico de observación convirtió la impedancia simulada en una
 onda monocanal similar a la de un dispositivo, aplicando ganancia,
-desplazamiento, ruido aditivo y deriva. Se definieron
+desplazamiento, ruido aditivo y deriva. La ganancia, el desplazamiento, el ruido
+y la deriva se redibujaron de forma independiente en cada latido observado (un
+latido por ajuste AV/VV); el modelo no supone, por tanto, una calibración
+estable a lo largo del barrido de 56 ajustes, sino un caso adverso. Se definieron
 dos dominios parásitos (Tabla~\ref{tab:domains}).
 
 \begin{table}[htbp]
@@ -178,13 +181,14 @@ de trabajo sistólico en ambos dominios; solo difirieron los parámetros parási
 
 \subsection{Extracción de características}
 
-Se extrayeron 42 características interpretables por latido:
+Se extrajeron 42 características interpretables por latido:
 \begin{itemize}[leftmargin=1.5em,itemsep=0.2em]
   \item 8 descriptores de la onda de impedancia: mínimo, máximo, amplitud
         (rango), tiempo del mínimo, tiempo del máximo, desviación estándar,
-        pendiente absoluta máxima y tiempo de eyección.
-  \item 3 características de contexto del dispositivo: frecuencia cardíaca,
-        intervalo AV intrínseco estimado y duración estimada del complejo QRS.
+        pendiente absoluta máxima y separación circular entre los tiempos del mínimo y del máximo.
+  \item 3 características de contexto: frecuencia cardíaca y los valores
+        verdaderos simulados del intervalo AV intrínseco y de la duración del
+        complejo QRS (no estimaciones del dispositivo).
   \item 5 características del ajuste: AV, VV, AV$^2$, VV$^2$ y AV $\times$ VV.
   \item 25 términos de interacción ajuste $\times$ contexto/impedancia.
   \item Diferencia al cuadrado entre el AV programado y el AV intrínseco.
@@ -194,18 +198,21 @@ Los términos de interacción permiten que un modelo lineal
 represente una superficie de respuesta cuadrática específica de cada paciente.
 El análisis primario utilizó características crudas, lo que corresponde a un
 despliegue no transductivo con un solo latido. La estandarización intrapaciente
-sobre el barrido de 56 ajustes se exploró únicamente como análisis de
-sensibilidad exploratorio y no se usó para la afirmación principal.
+sobre el barrido de 56 ajustes centra y escala cada característica de impedancia
+dentro del barrido de un paciente; como el ruido y la deriva se redibujan en
+cada latido, no elimina una ganancia o un desplazamiento fijo de sesión, sino el
+nivel medio del barrido. Se exploró únicamente como análisis de sensibilidad
+exploratorio y no se usó para la afirmación principal.
 
 \subsection{Modelos de aprendizaje para ordenar}
 
-El problema se planteó como \emph{learning-to-rank}. Este es un tipo de problema relacionado principalmente a las recomendaciones de búsqueda de documentos. La optimización se realiza a partir de una consulta o \emph{query} 'q' y un conjunto de documentos, entre los que se quiere extraer el más apropiado para responder a la consulta inicial. En este caso, cada paciente tomó el rol de una consulta o \emph{query}, y los 56 posibles ajustes AV y VV actuaron como documentos. La relevancia de cada ajuste se ordenó según el trabajo sistólico que producía (siendo un ajuste más relevante si generaba más trabajo efectivo).
+El problema se planteó como \emph{learning-to-rank}. Este es un tipo de problema relacionado principalmente con las recomendaciones de búsqueda de documentos. La optimización se realiza a partir de una consulta o \emph{query} 'q' y un conjunto de documentos, entre los que se quiere extraer el más apropiado para responder a la consulta inicial. En este caso, cada paciente tomó el rol de una consulta o \emph{query}, y los 56 posibles ajustes AV y VV actuaron como documentos. La relevancia de cada ajuste se ordenó según el trabajo sistólico que producía (siendo un ajuste más relevante si generaba más trabajo efectivo).
 Todos los modelos usaron la misma partición y las mismas métricas.
 \begin{enumerate}[leftmargin=1.5em,itemsep=0.2em]
   \item \textbf{Modelo de ordenación lineal por pares (Bradley--Terry):} 42
         características; la línea base interpretable principal.
-  \item \textbf{Modelo de ordenación lineal solo con contexto:} el mismo modelo
-        sin características de la onda de impedancia.
+  \item \textbf{Modelo de ordenación lineal sin la onda de impedancia:} el mismo
+        modelo sin las características de la onda.
   \item \textbf{LambdaMART:} \texttt{lambdarank} de LightGBM sobre las 42
         características, con grados de orden intrapaciente y ganancias de
         etiqueta lineales \citep{burges2010,ke2017}.
@@ -271,7 +278,7 @@ impedancia más contexto seleccionó un ajuste casi óptimo en el 64.0\,\% de lo
 pacientes de prueba con el umbral del 2\,\%, con una pérdida media del 1.8\,\%.
 Bajo el desplazamiento sellado del sensor, estos valores fueron 64.0\,\% y
 2.2\,\%. Con la tolerancia del 5\,\%, el mismo modelo alcanzó el 88.0\,\% en
-dominio y el 86.7\,\% bajo el desplazamiento. El suelo solo con contexto fue del
+dominio y el 86.7\,\% bajo el desplazamiento. El suelo del modelo sin onda (contexto y programación) fue del
 49.3\,\% al 2\,\% y del 68.0\,\% al 5\,\% en ambos dominios, de modo que la onda
 de impedancia añadió aproximadamente 15 puntos porcentuales al 2\,\% y 20--27
 puntos al 5\,\%, y redujo la pérdida a aproximadamente la mitad.
@@ -290,7 +297,7 @@ de trabajo sistólico.}
 \cmidrule(lr){2-5}\cmidrule(lr){6-7}
 Modelo & En dominio & Pérdida & Desplazado & Pérdida & En dominio & Desplazado \\
 \midrule
-Solo contexto (suelo) & 0.493 & 0.0366 & 0.493 & 0.0366 & 0.680 & 0.680 \\
+Sin onda (contexto + programación) & 0.493 & 0.0366 & 0.493 & 0.0366 & 0.680 & 0.680 \\
 Lineal (impedancia + contexto) & 0.640 & 0.0180 & 0.640 & 0.0217 & 0.880 & 0.867 \\
 Lineal + \emph{embeddings} de la CNN & 0.800 & 0.0109 & 0.680 & 0.0205 & 0.947 & 0.893 \\
 Mezcla ponderada por validación & 0.800 & 0.0109 & 0.680 & 0.0205 & 0.947 & 0.893 \\
@@ -305,13 +312,13 @@ El conjunto de árboles con \emph{gradient boosting} no superó al modelo de
 ordenación lineal en pérdida, y se degradó más
 bajo el desplazamiento (Tabla~\ref{tab:models}). La CNN sobre la señal cruda, por
 sí sola, fue deficiente. Sin embargo, sus \emph{embeddings} añadieron
-información complementaria al modelo lineal: el modelo lineal combinados con estos alcanzó el 80.0\,\% al 2\,\% con una pérdida del 1.09\,\%, una
+información complementaria al modelo lineal: el modelo lineal combinado con estos alcanzó el 80.0\,\% al 2\,\% con una pérdida del 1.09\,\%, una
 mejora pareada sobre el modelo lineal de $+16.0$ puntos porcentuales (IC 95\,\%
 $+5.3$ a $+26.7$) y una reducción de la pérdida de 0.72 puntos (IC 95\,\%
 $-1.19$ a $-0.28$). Bajo el desplazamiento, el modelo con
 \emph{embeddings} conservó la ganancia (68.0\,\% al 2\,\%; 89.3\,\% al
 5\,\%), y la mezcla ponderada por validación seleccionó ese mismo modelo
-(peso 1.0).
+(peso 1.0 sobre el modelo con \emph{embeddings}).
 
 \begin{table}[htbp]
 \centering
@@ -343,15 +350,20 @@ El modelo lineal entrenado en el dominio de origen apenas se degradó bajo el
 desplazamiento disjunto (64.0\,\% $\rightarrow$ 64.0\,\% al 2\,\%; 88.0\,\%
 $\rightarrow$ 86.7\,\% al 5\,\%). La cota de adaptación obtenida al entrenar
 dentro del dominio desplazado fue prácticamente idéntica al resultado entrenado
-en origen (66.7\,\% al 2\,\%; 85.3\,\% al 5\,\%), y la normalización
-intrapaciente no recuperó la pérdida. Este patrón indica que el desplazamiento
-está dominado por la destrucción de información (ruido y deriva) más que por una
-transformación recuperable de ganancia/desplazamiento.
+en origen (66.7\,\% al 2\,\%; 85.3\,\% al 5\,\%). La normalización intrapaciente
+no recuperó la pérdida cuando el modelo se entrenó en origen: 56.0\,\% al
+2\,\% (81.3\,\% al 5\,\%). Adaptada al destino alcanzó 64.0\,\% (88.0\,\% al
+5\,\%), sin superar de forma consistente la cota sin normalización. Este patrón
+es compatible con que el desplazamiento esté dominado por la destrucción de
+información (más ruido y deriva) más que por un cambio fijo de calibración que
+la estandarización del barrido pudiera deshacer; en el modelo de observación, de
+hecho, ganancia, desplazamiento, ruido y deriva se redibujan en cada latido.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Protocolo de dominio desplazado sellado y cota de adaptación.}
+\caption{Protocolo de dominio desplazado sellado y cota de adaptación. Las dos
+últimas filas usan normalización intrapaciente y son análisis de sensibilidad.}
 \label{tab:shift}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrr}
@@ -360,8 +372,8 @@ Protocolo en el dominio desplazado & Casi ópt. al 2\,\% & Casi ópt. al 5\,\% &
 \midrule
 Lineal entrenado en origen (prueba sellada) & 0.640 & 0.867 & 0.0217 & 0.923 \\
 VC 5 particiones adaptada al destino (cota oráculo) & 0.667 & 0.853 & 0.0214 & 0.917 \\
-Adaptada al destino + normalización intrapaciente & 0.627 & 0.867 & 0.0215 & 0.927 \\
-Entrenada en origen + normalización intrapaciente & 0.573 & 0.827 & 0.0243 & 0.917 \\
+Adaptada al destino + normalización intrapaciente & 0.640 & 0.880 & 0.0207 & 0.928 \\
+Entrenada en origen + normalización intrapaciente & 0.560 & 0.813 & 0.0249 & 0.919 \\
 \bottomrule
 \end{tabular}%
 }
@@ -396,9 +408,9 @@ recuperó un ajuste AV/VV casi óptimo en cerca de dos tercios de los pacientes 
 una tolerancia estricta del 2\,\% y en cerca de siete de cada ocho con una
 tolerancia pragmática del 5\,\%. Añadir \emph{embeddings} de la CNN mejoró la
 exactitud en ambos dominios, y la mezcla ponderada por validación seleccionó ese
-mismo modelo, sin una ganancia adicional. Un modelo solo con contexto y un control con
-etiquetas permutadas acotaron el resultado por abajo y descartaron una
-explicación obvia por fuga de información.
+mismo modelo, sin una ganancia adicional. Un modelo sin la onda de impedancia y
+un control con etiquetas permutadas acotaron el resultado por abajo y
+descartaron una explicación obvia por fuga de información.
 
 \subsection{Relación con trabajos previos}
 
@@ -422,7 +434,13 @@ que las representaciones aprendidas aportan valor cuando se combinan con las lla
   \item El modelo de
         observación de la impedancia es fenomenológico y no captura la posición
         de los electrodos, el hematocrito, la postura, la respiración ni la
-        fibrosis.
+        fibrosis. Además, redibuja ganancia, desplazamiento, ruido y deriva en
+        cada latido, de modo que el barrido no representa una calibración de
+        sesión estable.
+  \item Las tres características de contexto son los valores verdaderos del
+        simulador, no estimaciones del dispositivo; un dispositivo real
+        estimaría el AV intrínseco y el QRS con error, por lo que el piso sin
+        onda es optimista.
   \item El óptimo VV es la parte más débil del simulador y está influido por una
         penalización por resincronización.
   \item El dominio desplazado es una prueba de estrés sintética, no una cohorte
@@ -430,7 +448,8 @@ que las representaciones aprendidas aportan valor cuando se combinan con las lla
   \item No se modelaron señales de EGM ni de acelerómetro; el estudio es de solo
         impedancia por diseño.
   \item La normalización intrapaciente es transductiva porque requiere el barrido
-        completo de 56 ajustes; no forma parte de la afirmación principal con un
+        completo de 56 ajustes; estandariza el nivel medio del barrido, no una
+        calibración fija, y no forma parte de la afirmación principal con un
         solo latido.
   \item El tamaño muestral del piloto no se deriva de la curva de aprendizaje;
         es una elección de viabilidad y seguridad.
@@ -446,8 +465,8 @@ En este estudio \emph{in silico}, una señal de impedancia intracardíaca de un 
 latido junto con el contexto del dispositivo contuvo información suficiente para
 que modelos simples de aprendizaje para ordenar identificaran ajustes AV/VV casi
 óptimos en una fracción sustancial de pacientes virtuales, con un suelo de
-rendimiento fijado solo por el contexto y con una ordenación preservada bajo un
-desplazamiento extremo del sensor. Estos hallazgos justifican un piloto
+rendimiento fijado por el contexto y la programación, y con una ordenación
+preservada bajo un desplazamiento extremo del sensor. Estos hallazgos justifican un piloto
 prospectivo con registros reales de impedancia y una referencia hemodinámica
 independiente, pero no son evidencia de beneficio clínico.
 
@@ -520,7 +539,8 @@ pacientes de entrenamiento.}
 \centering
 \includegraphics[width=0.85\linewidth]{ablations.png}
 \caption{Ablaciones del sensor y control negativo. Eliminar las características
-de la onda de impedancia devuelve el rendimiento al suelo solo con contexto.}
+de la onda de impedancia devuelve el rendimiento al suelo sin onda (contexto y
+programación).}
 \label{fig:ablations}
 \end{figure}
 

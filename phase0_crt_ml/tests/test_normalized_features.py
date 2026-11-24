@@ -95,3 +95,33 @@ def test_patient_normalize_recomputes_impedance_interactions():
         expected = out[np.ix_(m, [1])] * out[np.ix_(m, [0])]
         assert np.allclose(out[np.ix_(m, [3])], expected)
     assert np.array_equal(out[:, 1:3], X[:, 1:3])
+
+
+def test_patient_normalize_recomputes_interactions_with_composite_operands():
+    """`set_av_x_vv` is itself a base feature, so it must win the longest match."""
+    t = np.arange(0.0, 700.0)
+    rows = []
+    names = None
+    for group in range(2):
+        for k, av in enumerate([80, 140, 200]):
+            imp = (0.4 + 0.05 * group) + (0.02 + 0.003 * group) * (
+                60.0 + 30.0 * np.sin(2 * np.pi * t / 700.0 + k)
+            )
+            feats = extract_features(
+                BeatSignals(t_ms=t, impedance=imp),
+                PatientParams(patient_id=group),
+                Setting(av_ms=av, vv_ms=0),
+            )
+            names = sorted(feats)
+            rows.append(feats)
+    X = np.array([[row[n] for n in names] for row in rows], dtype=float)
+    groups = np.array([0, 0, 0, 1, 1, 1])
+    out = patient_normalize(X, groups, names, prefixes=("imp_",))
+    idx = {name: i for i, name in enumerate(names)}
+    for target, left, right in (
+        ("ix_set_av_x_vv_x_imp_stroke", "set_av_x_vv", "imp_stroke"),
+        ("ix_set_av_x_vv_x_imp_ejection_time", "set_av_x_vv", "imp_ejection_time"),
+        ("ix_set_av_x_vv_x_ctx_hr", "set_av_x_vv", "ctx_hr"),
+    ):
+        expected = out[:, idx[left]] * out[:, idx[right]]
+        assert np.allclose(out[:, idx[target]], expected), target

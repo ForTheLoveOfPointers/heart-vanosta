@@ -2,7 +2,9 @@
 
 A ``SignalDomain`` describes the *nuisance* parameters of the intracardiac
 impedance observation model: gain, offset, noise, and baseline drift.  The
-physiology is unchanged; only what the device would record changes.
+physiology is unchanged; only what the device would record changes.  A concrete
+draw is made for every beat (see ``sample_domain`` and ``observe``), so the
+nuisance varies across the AV/VV sweep of a single patient.
 
 The ``SOURCE_DOMAIN`` is used for training and in-domain test.  The
 ``SHIFTED_DOMAIN`` represents a plausible but different device/session and is
