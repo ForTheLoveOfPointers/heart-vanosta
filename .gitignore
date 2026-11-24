@@ -22,7 +22,7 @@ htmlcov/
 .vscode/
 .idea/
 
-# Caché de CircAdapt (se regenera al correr el simulador)
+# Caché de CircAdapt (se regenera al ejecutar el simulador)
 P_ref_*.npy
 
 # LaTeX (el PDF final sí se versiona)

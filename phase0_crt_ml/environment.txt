@@ -1,5 +1,5 @@
-# Entorno de la corrida primaria reportada
-# (regenerado el 2026-11-23; completar el commit al crear el tag v1.1.0)
+# Entorno de la ejecución principal reportada
+# (regenerado el 2026-11-23; completar el commit al crear el tag v1.1.1)
 
 os: macOS 15.6 (Darwin 24G84)
 arch: arm64
@@ -17,4 +17,4 @@ seed: 0
 split: 350 train / 75 validation / 75 test
 dataset_tag: bench500_imp
 ladder_tag: ladder500_imp_reconcile
-git_commit: v1.1.0 (tag; ver git log)
+git_commit: v1.1.1 (tag; ver git log)

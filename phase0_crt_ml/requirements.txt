@@ -1,4 +1,4 @@
-# Entorno de la corrida reportada: Python 3.12 (ver REPRODUCING.md).
+# Entorno de la ejecución reportada: Python 3.12 (ver REPRODUCING.md).
 numpy>=1.24
 scipy>=1.10
 matplotlib>=3.6

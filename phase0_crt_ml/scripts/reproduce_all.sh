@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce la corrida primaria completa del estudio Phase 0.
+# Reproduce la ejecución principal completa del estudio Phase 0.
 #
 # Uso:
 #   bash scripts/reproduce_all.sh              # 8 hilos por defecto
@@ -17,19 +17,19 @@ PY="$ROOT/.venv/bin/python"
 THREADS="${THREADS:-8}"
 
 if [[ ! -x "$PY" ]]; then
-  echo "No existe $PY. Creá el entorno virtual (ver REPRODUCING.md)." >&2
+  echo "No existe $PY. Cree el entorno virtual (ver REPRODUCING.md)." >&2
   exit 1
 fi
 
 if [[ -e "$ROOT/reports/benchmark_dataset_bench500_imp.npz" ]]; then
   echo "Ya existe reports/benchmark_dataset_bench500_imp.npz." >&2
-  echo "Borralo o cambiá el tag si querés regenerar desde cero." >&2
+  echo "Elimínelo o cambie la etiqueta si desea regenerar desde cero." >&2
   exit 1
 fi
 
 step() { date "+[%Y-%m-%d %H:%M:%S] $*"; }
 
-step "1/5 dataset + benchmark lineal/CNN"
+step "1/5 conjunto de datos + banco de pruebas lineal/CNN"
 "$PY" scripts/run_benchmark.py \
   --patients 500 --signal-length 256 --tag bench500_imp --threads "$THREADS"
 

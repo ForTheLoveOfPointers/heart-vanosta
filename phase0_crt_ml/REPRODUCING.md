@@ -3,23 +3,27 @@
 Este documento es la contraparte de reproducibilidad de
 [`../manuscript/preprint_es.tex`](../manuscript/preprint_es.tex). Registra el
 entorno exacto, los comandos, las semillas y los artefactos esperados de la
-corrida primaria.
+ejecución principal.
 
 ## 1. Entorno verificado
 
-Corrida usada para regenerar los resultados del manuscrito:
+Ejecución usada para regenerar los resultados del manuscrito:
 
-- **Sistema:** macOS 15.6 (Darwin, arm64), Apple M2, 8 núcleos, 24 GB RAM.
+- **Sistema:** macOS 15.6 (Darwin, arm64), Apple M2, 8 núcleos, 24 GB de RAM.
 - **Python:** 3.12.16 (Homebrew).
-- **pyCircAdapt:** 2602 (wheel `circadapt-2602-py3-none-macosx_12_0_universal2.whl`).
+- **pyCircAdapt:** 2602 (distribución binaria
+  `circadapt-2602-py3-none-macosx_12_0_universal2.whl`).
 - **numpy:** 2.5.5 · **scipy:** 1.18.1 · **matplotlib:** 3.11.2 ·
   **PyYAML:** 6.0.4.
 - **torch:** 2.15.0.
-- **lightgbm:** 4.7.0, compilado en macOS con `USE_OPENMP=OFF` (ver nota de
+- **lightgbm:** 4.7.0, compilado en macOS con `USE_OPENMP=OFF` (véase la nota de
   macOS más abajo).
-- **Semilla primaria:** `0` (config `seed: 0`; benchmark `--seed 0`).
-- **Split:** 350 train / 75 validation / 75 test pacientes.
-- **Tag del dataset:** `bench500_imp`. **Tag del ladder:** `ladder500_imp_reconcile`.
+- **Semilla principal:** `0` (configuración `seed: 0`; banco de pruebas
+  `--seed 0`).
+- **Partición:** 350 pacientes de entrenamiento / 75 de validación / 75 de
+  prueba.
+- **Etiqueta del conjunto de datos:** `bench500_imp`. **Etiqueta de la escalera:**
+  `ladder500_imp_reconcile`.
 
 Para regenerar el registro del entorno:
 
@@ -32,8 +36,9 @@ git rev-parse HEAD
 .venv/bin/python -c "import circadapt; print(getattr(circadapt, '__version__', '?'))"
 ```
 
-El archivo `pip-freeze.txt` se versiona junto con el release. Los `.npz`
-grandes y los checkpoints no se versionan: se regeneran con el pipeline.
+El archivo `pip-freeze.txt` se versiona junto con la versión publicada. Los
+archivos `.npz` grandes y los puntos de control no se versionan: se regeneran con
+el flujo de trabajo.
 
 ## 2. Instalación
 
@@ -47,22 +52,22 @@ bash scripts/setup_circadapt.sh
 .venv/bin/python -m pytest -q
 ```
 
-`setup_circadapt.sh` instala el wheel de CircAdapt desde el sitio del proyecto.
-Se puede fijar la versión y verificar el checksum:
+`setup_circadapt.sh` instala la distribución binaria de CircAdapt desde el sitio
+del proyecto. Se puede fijar la versión y verificar el checksum:
 
 ```bash
 CIRCADAPT_VERSION=2602 CIRCADAPT_SHA256=<sha256-del-wheel> \
   bash scripts/setup_circadapt.sh
 ```
 
-Resultado esperado del smoke test:
+Resultado esperado de la prueba mínima:
 
 ```text
 SMOKE OK
 samples=27 features=42
 ```
 
-Y de la suite de tests:
+Y de la suite de pruebas:
 
 ```text
 23 passed
@@ -70,14 +75,14 @@ Y de la suite de tests:
 
 ### Nota para macOS: conflicto de `libomp` entre torch y LightGBM
 
-Las wheels de `torch` y `lightgbm` para macOS incluyen cada una su propia copia
-de OpenMP. Cargarlas en el mismo proceso aborta con:
+Las distribuciones binarias de `torch` y `lightgbm` para macOS incluyen cada una
+su propia copia de OpenMP. Cargarlas en el mismo proceso aborta con:
 
 ```text
 OMP: Error #15: Initializing libomp.dylib, but found libomp.dylib already initialized.
 ```
 
-Solución usada en la corrida reportada:
+Solución usada en la ejecución reportada:
 
 ```bash
 brew install libomp
@@ -87,28 +92,29 @@ brew install libomp
 
 En Linux, `pip install lightgbm` funciona sin este paso.
 
-## 3. Análisis primario
+## 3. Análisis principal
 
-El baseline primario es la ruta **sin normalización within-patient**
-(`patient_normalize: []`, `features.mode: raw`). El benchmark lineal/CNN crea
-el dataset `bench500_imp` que reutilizan los pasos siguientes. **No** usar
-`--skip-cnn`: la escalera de modelos necesita los embeddings de la CNN.
+La línea base principal es la ruta **sin normalización intrapaciente**
+(`patient_normalize: []`, `features.mode: raw`). El banco de pruebas lineal/CNN
+crea el conjunto de datos `bench500_imp` que reutilizan los pasos siguientes.
+**No** utilice `--skip-cnn`: la escalera de modelos necesita los embeddings de la
+CNN.
 
-Para correr todo de una vez:
+Para ejecutar todo de una vez:
 
 ```bash
 THREADS=8 bash scripts/reproduce_all.sh
 ```
 
-Equivalente paso a paso:
+De forma equivalente, paso a paso:
 
 ```bash
-# 1. Dataset de 500 pacientes + benchmark lineal y CNN
+# 1. Conjunto de datos de 500 pacientes + banco de pruebas lineal y CNN
 #    (incluye el dominio desplazado sellado)
 .venv/bin/python scripts/run_benchmark.py \
   --patients 500 --signal-length 256 --tag bench500_imp --threads 8
 
-# 2. Escalera: LambdaMART, embeddings CNN, híbridos, blend y control negativo
+# 2. Escalera: LambdaMART, embeddings de la CNN, híbridos, mezcla y control negativo
 .venv/bin/python scripts/run_gbt_benchmark.py \
   --dataset-tag bench500_imp \
   --out-tag ladder500_imp_reconcile \
@@ -118,7 +124,7 @@ Equivalente paso a paso:
 .venv/bin/python scripts/benchmark_learning_curve.py \
   --tag bench500_imp --threads 8
 
-# 4. Reconciliación del protocolo sellado a 2 % y 5 %
+# 4. Reconciliación del protocolo sellado al 2 % y al 5 %
 .venv/bin/python scripts/reconcile_shift_protocol.py
 
 # 5. Figuras del manuscrito
@@ -126,30 +132,30 @@ Equivalente paso a paso:
 ```
 
 Tiempo aproximado: 1 hora en un Apple M2 de 8 núcleos. Espacio en disco:
-~25 MB de `reports/`.
+~25 MB en `reports/`.
 
 ## 4. Salidas esperadas
 
-Artefactos primarios del manuscrito:
+Artefactos principales del manuscrito:
 
 | Artefacto | Origen |
 |---|---|
-| Dataset, splits y arrays source/shifted | `reports/benchmark_dataset_bench500_imp.npz`, `reports/benchmark_shifted_bench500_imp.npz`, `reports/benchmark_split_bench500_imp.json` |
+| Conjunto de datos, particiones y arreglos de origen/desplazado | `reports/benchmark_dataset_bench500_imp.npz`, `reports/benchmark_shifted_bench500_imp.npz`, `reports/benchmark_split_bench500_imp.json` |
 | Resumen lineal/CNN | `reports/benchmark_summary_bench500_imp.md` |
-| Escalera + ICs + blend (primario) | `reports/gbt_report_ladder500_imp_reconcile.json`, `reports/gbt_summary_ladder500_imp_reconcile.{md,png}` |
-| Scores por modelo (auditoría) | `reports/scores_ladder500_imp_reconcile.npz` |
-| Protocolo sellado a 2 % y 5 % | `reports/reconcile_shift_protocol.json` |
+| Escalera + intervalos de confianza + mezcla (principal) | `reports/gbt_report_ladder500_imp_reconcile.json`, `reports/gbt_summary_ladder500_imp_reconcile.{md,png}` |
+| Puntuaciones por modelo (auditoría) | `reports/scores_ladder500_imp_reconcile.npz` |
+| Protocolo sellado al 2 % y al 5 % | `reports/reconcile_shift_protocol.json` |
 | Curva de aprendizaje | `reports/benchmark_learning_curve_bench500_imp.{json,png}` |
 | Figuras del manuscrito | `manuscript/figures/{response_surface,model_comparison,learning_curve,ablations}.png` |
 
 **Advertencia de procedencia.** `reports/pitch_summary_bench500_pp.md` es un
-artefacto histórico de una corrida exploratoria y no forma parte de este release.
-Las cifras primarias son las de la corrida `ladder500_imp_reconcile`;
-`reports/benchmark_summary_bench500_imp.md` corresponde a la misma corrida
-primaria sin normalización.
+artefacto histórico de una ejecución exploratoria y no forma parte de esta
+versión. Los valores principales son los de la ejecución
+`ladder500_imp_reconcile`; `reports/benchmark_summary_bench500_imp.md`
+corresponde a la misma ejecución principal sin normalización.
 
-El control negativo citado en el manuscrito es el del ladder (GBT con etiquetas
-barajadas: 0.080 y Spearman −0.149); se genera dentro de
+El control negativo citado en el manuscrito es el de la escalera (GBT con
+etiquetas barajadas: 0.080 y Spearman −0.149); se genera dentro de
 `run_gbt_benchmark.py` y no requiere un paso aparte.
 
 ## 5. Compilación del manuscrito
@@ -166,29 +172,33 @@ La fuente es `manuscript/preprint_es.tex`; las referencias están en
 
 Se versiona en Git:
 
-- código (`src/`), scripts, tests, `configs/`, `conftest.py`, `requirements.txt`;
+- código (`src/`), scripts, pruebas, `configs/`, `conftest.py`,
+  `requirements.txt`;
 - `README.md`, `REPRODUCING.md`, `manuscript/`;
 - artefactos curados: `.md`, `.json`, `.png` y `scores_*.npz` de `reports/`;
-- `pip-freeze.txt`, `environment.txt`, `CITATION.cff`, licencias.
+- `pip-freeze.txt`, `environment.txt`, `CITATION.cff` y licencias.
 
 No se versiona:
 
 - `.venv/`, `__pycache__/`, `.pytest_cache/`;
-- datasets `.npz` grandes, checkpoints `.pt` y el caché `P_ref_*.npy`;
+- conjuntos de datos `.npz` grandes, puntos de control `.pt` y la caché
+  `P_ref_*.npy`;
 - directorios de datos crudos o procesados.
 
-El dataset derivado completo (~25 MB de `reports/`) se archiva aparte en
-Zenodo/OSF si se requiere reproducibilidad byte a byte. En caso contrario, la
-unidad de reproducibilidad es el pipeline con la versión de CircAdapt, el
+El conjunto de datos derivado completo (~25 MB en `reports/`) se archiva aparte
+en Zenodo/OSF si se requiere reproducibilidad byte a byte. En caso contrario, la
+unidad de reproducibilidad es el flujo de trabajo con la versión de CircAdapt, el
 `pip-freeze.txt` y las semillas.
 
-## 7. Checklist de release
+## 7. Lista de verificación de la versión
 
-- [x] Checkout limpio reproduce las tablas 1–3 dentro del redondeo.
+- [x] Una copia limpia del repositorio reproduce las tablas 1–3 dentro del
+      redondeo.
 - [x] `pip-freeze.txt` y `environment.txt` versionados.
 - [x] `CIRCADAPT_VERSION` fijado y registrado.
 - [x] `git status` limpio; sin secretos, claves ni archivos personales.
-- [x] Crear tag `v1.1.0`, release en GitHub y archivo en Zenodo.
+- [x] Crear la etiqueta de la versión, publicar la versión en GitHub y archivar
+      en Zenodo.
 - [x] Añadir el DOI resultante a `README.md`, `CITATION.cff` y el manuscrito.
-      DOI de la versión: `10.5281/zenodo.24505901`
-      (concept DOI: `10.5281/zenodo.24487582`).
+      DOI de la versión: véase `CITATION.cff`.
+      (DOI conceptual: `10.5281/zenodo.24487582`).

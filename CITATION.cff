@@ -1,19 +1,19 @@
 cff-version: 1.2.0
-message: "Si reutilizás este código o los resultados, citá este repositorio y el preprint asociado."
+message: "Si reutiliza este código o los resultados, cite este repositorio y el preprint asociado."
 title: "Aprendizaje in silico de la optimización AV/VV en TRC a partir de la impedancia intracardíaca"
 abstract: >-
   Estudio de simulación sobre la aprendibilidad de la optimización AV/VV en
   terapia de resincronización cardíaca usando impedancia intracardíaca y
-  contexto del dispositivo. Incluye el pipeline CircAdapt, el modelo de
+  contexto del dispositivo. Incluye el flujo de trabajo CircAdapt, el modelo de
   observación de impedancia, los rankers y los artefactos de resultados.
 authors:
   - family-names: Costa
     given-names: Lucas
     email: 2000.costalucas@gmail.com
     affiliation: "Independent Researcher"
-version: 1.1.0
+version: 1.1.1
 date-released: "2026-11-24"
-doi: "10.5281/zenodo.24505901"
+doi: "10.5281/zenodo.24487582"
 license: MIT
 license-url: "https://github.com/ForTheLoveOfPointers/heart-vanosta/blob/main/LICENSE"
 repository-code: "https://github.com/ForTheLoveOfPointers/heart-vanosta"
