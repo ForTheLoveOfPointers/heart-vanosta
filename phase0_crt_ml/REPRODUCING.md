@@ -188,7 +188,7 @@ unidad de reproducibilidad es el pipeline con la versión de CircAdapt, el
 - [x] `pip-freeze.txt` y `environment.txt` versionados.
 - [x] `CIRCADAPT_VERSION` fijado y registrado.
 - [x] `git status` limpio; sin secretos, claves ni archivos personales.
-- [x] Crear tag `v1.0.1`, release en GitHub y archivo en Zenodo.
+- [x] Crear tag `v1.1.0`, release en GitHub y archivo en Zenodo.
 - [x] Añadir el DOI resultante a `README.md`, `CITATION.cff` y el manuscrito.
-      DOI de la versión: `10.5281/zenodo.24487583`
+      DOI de la versión: `10.5281/zenodo.24505901`
       (concept DOI: `10.5281/zenodo.24487582`).
