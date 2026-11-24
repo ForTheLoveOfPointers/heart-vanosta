@@ -1,0 +1,57 @@
+seed: 0
+
+simulation:
+  circadapt_model: VanOsta2024
+  circadapt_beats: 3
+  vv_penalty_strength: 1.0
+  n_patients: 120
+  av_grid_ms: [80, 110, 140, 170, 200, 230, 260, 300]
+  vv_grid_ms: [-60, -30, 0, 30, 60, 90, 120]
+  av_block_prob: 0.30
+  patient_ranges:
+    hr_bpm: [55, 90]
+    contractility: [0.60, 1.40]
+    lv_viability: [0.50, 1.00]
+    septal_viability: [0.40, 1.00]
+    lateral_viability: [0.60, 1.00]
+    rv_viability: [0.60, 1.00]
+    preload: [0.80, 1.20]
+    afterload: [0.80, 1.20]
+    intrinsic_av_ms: [130, 220]
+    qrs_ms: [120, 190]
+    dyssynchrony_ms: [20, 100]
+    lead_lv_delay_ms: [10, 60]
+    lead_rv_delay_ms: [5, 25]
+
+features:
+  # raw | normalized. Normalized applies detrending and robust scaling.
+  mode: raw
+  # Raw sensor features are the primary single-sensor baseline. Within-patient
+  # standardization is an optional sensitivity analysis: it needs the full
+  # 56-setting sweep and is transductive per patient. Use [imp_] only for that
+  # secondary analysis; interaction terms are recomputed consistently.
+  patient_normalize: []
+
+model:
+  l2: 0.003
+  margin_frac: 0.01
+  max_pairs_per_group: 500
+
+evaluation:
+  test_frac: 0.30
+  top_k: 3
+  regret_threshold: 0.02
+  learning_curve_patients: [10, 20, 40, 80, 150, 350]
+
+benchmark:
+  n_patients: 500
+  signal_length: 256
+  val_frac: 0.15
+  test_frac: 0.15
+  cnn_epochs: 30
+  cnn_batch_pairs: 512
+  cnn_lr: 0.0005
+  cnn_weight_decay: 0.001
+  cnn_width: 8
+  cnn_patience: 8
+  cnn_max_pairs_per_group: 100

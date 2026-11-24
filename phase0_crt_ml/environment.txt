@@ -1,0 +1,20 @@
+# Entorno de la corrida primaria reportada
+# (regenerado el 2026-11-23; completar el commit al crear el tag v1.0.0)
+
+os: macOS 15.6 (Darwin 24G84)
+arch: arm64
+cpu: Apple M2 (8 núcleos)
+ram_gb: 24
+python: 3.12.16 (Homebrew)
+pycircadapt: 2602 (wheel macosx_12_0_universal2, sha256 3568091c496cb6ce38f7b6171dc5346a6d95030f1783ea19f1dc93aa99c319c6)
+numpy: 2.5.5
+scipy: 1.18.1
+matplotlib: 3.11.2
+pyyaml: 6.0.4
+torch: 2.15.0
+lightgbm: 4.7.0 (compilado con USE_OPENMP=OFF por el conflicto de libomp en macOS)
+seed: 0
+split: 350 train / 75 validation / 75 test
+dataset_tag: bench500_imp
+ladder_tag: ladder500_imp_reconcile
+git_commit: v1.0.0 (tag; ver git log)

@@ -1,0 +1,142 @@
+{
+  "dataset_tag": "bench500_imp",
+  "seed": 0,
+  "thresholds": [
+    0.02,
+    0.05
+  ],
+  "results": {
+    "source_trained_source_0.02": {
+      "exact_argmax_accuracy": 0.21333333333333335,
+      "near_optimal_fraction": 0.64,
+      "top3_hit": 0.48,
+      "mean_regret": 0.018029150140769286,
+      "median_regret": 0.009073116630001049,
+      "mean_spearman": 0.9341152882205513,
+      "mean_abs_av_error_ms": 47.06666666666667,
+      "mean_abs_vv_error_ms": 6.8,
+      "n_patients": 75.0
+    },
+    "source_trained_shifted_0.02": {
+      "exact_argmax_accuracy": 0.12,
+      "near_optimal_fraction": 0.64,
+      "top3_hit": 0.3333333333333333,
+      "mean_regret": 0.02166373535145941,
+      "median_regret": 0.011847374074887004,
+      "mean_spearman": 0.9225217589428117,
+      "mean_abs_av_error_ms": 55.06666666666667,
+      "mean_abs_vv_error_ms": 6.8,
+      "n_patients": 75.0
+    },
+    "source_trained_source_0.05": {
+      "exact_argmax_accuracy": 0.21333333333333335,
+      "near_optimal_fraction": 0.88,
+      "top3_hit": 0.48,
+      "mean_regret": 0.018029150140769286,
+      "median_regret": 0.009073116630001049,
+      "mean_spearman": 0.9341152882205513,
+      "mean_abs_av_error_ms": 47.06666666666667,
+      "mean_abs_vv_error_ms": 6.8,
+      "n_patients": 75.0
+    },
+    "source_trained_shifted_0.05": {
+      "exact_argmax_accuracy": 0.12,
+      "near_optimal_fraction": 0.8666666666666667,
+      "top3_hit": 0.3333333333333333,
+      "mean_regret": 0.02166373535145941,
+      "median_regret": 0.011847374074887004,
+      "mean_spearman": 0.9225217589428117,
+      "mean_abs_av_error_ms": 55.06666666666667,
+      "mean_abs_vv_error_ms": 6.8,
+      "n_patients": 75.0
+    },
+    "source_trained_norm_source_0.02": {
+      "exact_argmax_accuracy": 0.21333333333333335,
+      "near_optimal_fraction": 0.7066666666666667,
+      "top3_hit": 0.44,
+      "mean_regret": 0.01715625192161746,
+      "median_regret": 0.00583351596791835,
+      "mean_spearman": 0.9517229437229439,
+      "mean_abs_av_error_ms": 50.13333333333333,
+      "mean_abs_vv_error_ms": 3.2,
+      "n_patients": 75.0
+    },
+    "source_trained_norm_shifted_0.02": {
+      "exact_argmax_accuracy": 0.09333333333333334,
+      "near_optimal_fraction": 0.5733333333333334,
+      "top3_hit": 0.3466666666666667,
+      "mean_regret": 0.02433769179312905,
+      "median_regret": 0.014463886284350427,
+      "mean_spearman": 0.9167354750512644,
+      "mean_abs_av_error_ms": 60.4,
+      "mean_abs_vv_error_ms": 8.4,
+      "n_patients": 75.0
+    },
+    "source_trained_norm_source_0.05": {
+      "exact_argmax_accuracy": 0.21333333333333335,
+      "near_optimal_fraction": 0.8666666666666667,
+      "top3_hit": 0.44,
+      "mean_regret": 0.01715625192161746,
+      "median_regret": 0.00583351596791835,
+      "mean_spearman": 0.9517229437229439,
+      "mean_abs_av_error_ms": 50.13333333333333,
+      "mean_abs_vv_error_ms": 3.2,
+      "n_patients": 75.0
+    },
+    "source_trained_norm_shifted_0.05": {
+      "exact_argmax_accuracy": 0.09333333333333334,
+      "near_optimal_fraction": 0.8266666666666667,
+      "top3_hit": 0.3466666666666667,
+      "mean_regret": 0.02433769179312905,
+      "median_regret": 0.014463886284350427,
+      "mean_spearman": 0.9167354750512644,
+      "mean_abs_av_error_ms": 60.4,
+      "mean_abs_vv_error_ms": 8.4,
+      "n_patients": 75.0
+    },
+    "target_adapted_shifted_0.02": {
+      "exact_argmax_accuracy": 0.13333333333333333,
+      "near_optimal_fraction": 0.6666666666666666,
+      "top3_hit": 0.3466666666666667,
+      "mean_regret": 0.021423762510550406,
+      "median_regret": 0.008917122579806992,
+      "mean_spearman": 0.9169560264297106,
+      "mean_abs_av_error_ms": 50.53333333333333,
+      "mean_abs_vv_error_ms": 7.2,
+      "n_patients": 75.0
+    },
+    "target_adapted_norm_shifted_0.02": {
+      "exact_argmax_accuracy": 0.12,
+      "near_optimal_fraction": 0.6266666666666667,
+      "top3_hit": 0.29333333333333333,
+      "mean_regret": 0.02145015913243277,
+      "median_regret": 0.011697786740230176,
+      "mean_spearman": 0.9274258373205743,
+      "mean_abs_av_error_ms": 51.46666666666667,
+      "mean_abs_vv_error_ms": 7.2,
+      "n_patients": 75.0
+    },
+    "target_adapted_shifted_0.05": {
+      "exact_argmax_accuracy": 0.13333333333333333,
+      "near_optimal_fraction": 0.8533333333333334,
+      "top3_hit": 0.3466666666666667,
+      "mean_regret": 0.021423762510550406,
+      "median_regret": 0.008917122579806992,
+      "mean_spearman": 0.9169560264297106,
+      "mean_abs_av_error_ms": 50.53333333333333,
+      "mean_abs_vv_error_ms": 7.2,
+      "n_patients": 75.0
+    },
+    "target_adapted_norm_shifted_0.05": {
+      "exact_argmax_accuracy": 0.12,
+      "near_optimal_fraction": 0.8666666666666667,
+      "top3_hit": 0.29333333333333333,
+      "mean_regret": 0.02145015913243277,
+      "median_regret": 0.011697786740230176,
+      "mean_spearman": 0.9274258373205743,
+      "mean_abs_av_error_ms": 51.46666666666667,
+      "mean_abs_vv_error_ms": 7.2,
+      "n_patients": 75.0
+    }
+  }
+}

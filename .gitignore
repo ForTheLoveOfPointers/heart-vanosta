@@ -1,0 +1,58 @@
+# macOS
+.DS_Store
+._*
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editor / IDE
+.zed/
+.vscode/
+.idea/
+
+# Caché de CircAdapt (se regenera al correr el simulador)
+P_ref_*.npy
+
+# LaTeX (el PDF final sí se versiona)
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.fdb_latexmk
+manuscript/*.fls
+manuscript/*.log
+manuscript/*.out
+manuscript/*.synctex.gz
+manuscript/*.toc
+manuscript/*.run.xml
+
+# R
+.Rhistory
+.RData
+Rplots.pdf
+
+# Datos y artefactos grandes (ver phase0_crt_ml/.gitignore)
+*.npz
+*.pt
+*.npy
+phase0_crt_ml/data/raw/*
+phase0_crt_ml/data/processed/*
+
+# Reportes: solo se versionan artefactos curados
+phase0_crt_ml/reports/*
+!phase0_crt_ml/reports/.gitkeep
+!phase0_crt_ml/reports/*.json
+!phase0_crt_ml/reports/*.md
+!phase0_crt_ml/reports/*.png
+!phase0_crt_ml/reports/scores_*.npz

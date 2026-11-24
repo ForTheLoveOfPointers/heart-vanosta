@@ -1,0 +1,170 @@
+[
+  {
+    "n_train_patients": 10,
+    "linear": {
+      "exact_argmax_accuracy": 0.2,
+      "near_optimal_fraction": 0.5733333333333334,
+      "top3_hit": 0.44,
+      "mean_regret": 0.02324964952972486,
+      "median_regret": 0.014288551692355397,
+      "mean_spearman": 0.9258883572567784,
+      "mean_abs_av_error_ms": 58.8,
+      "mean_abs_vv_error_ms": 4.8,
+      "n_patients": 75.0
+    },
+    "cnn": {
+      "exact_argmax_accuracy": 0.0,
+      "near_optimal_fraction": 0.0,
+      "top3_hit": 0.05333333333333334,
+      "mean_regret": 0.19137143422608371,
+      "median_regret": 0.19175815495342716,
+      "mean_spearman": 0.41828935976304404,
+      "mean_abs_av_error_ms": 52.13333333333333,
+      "mean_abs_vv_error_ms": 69.2,
+      "n_patients": 75.0
+    },
+    "cnn_best_epoch": 12,
+    "cnn_params": 2412,
+    "cnn_epochs": 30
+  },
+  {
+    "n_train_patients": 20,
+    "linear": {
+      "exact_argmax_accuracy": 0.21333333333333335,
+      "near_optimal_fraction": 0.6533333333333333,
+      "top3_hit": 0.4266666666666667,
+      "mean_regret": 0.019643330170107724,
+      "median_regret": 0.008167114614671756,
+      "mean_spearman": 0.9283964456596039,
+      "mean_abs_av_error_ms": 53.333333333333336,
+      "mean_abs_vv_error_ms": 5.2,
+      "n_patients": 75.0
+    },
+    "cnn": {
+      "exact_argmax_accuracy": 0.0,
+      "near_optimal_fraction": 0.013333333333333334,
+      "top3_hit": 0.12,
+      "mean_regret": 0.17820711540960005,
+      "median_regret": 0.1751646412961519,
+      "mean_spearman": 0.5013257874822904,
+      "mean_abs_av_error_ms": 32.0,
+      "mean_abs_vv_error_ms": 62.4,
+      "n_patients": 75.0
+    },
+    "cnn_best_epoch": 26,
+    "cnn_params": 2412,
+    "cnn_epochs": 30
+  },
+  {
+    "n_train_patients": 40,
+    "linear": {
+      "exact_argmax_accuracy": 0.18666666666666668,
+      "near_optimal_fraction": 0.6133333333333333,
+      "top3_hit": 0.49333333333333335,
+      "mean_regret": 0.02355404243162195,
+      "median_regret": 0.01212092201844068,
+      "mean_spearman": 0.9264114832535884,
+      "mean_abs_av_error_ms": 46.666666666666664,
+      "mean_abs_vv_error_ms": 7.6,
+      "n_patients": 75.0
+    },
+    "cnn": {
+      "exact_argmax_accuracy": 0.0,
+      "near_optimal_fraction": 0.0,
+      "top3_hit": 0.06666666666666667,
+      "mean_regret": 0.19247909653227457,
+      "median_regret": 0.1940178465912166,
+      "mean_spearman": 0.4204110275689223,
+      "mean_abs_av_error_ms": 45.46666666666667,
+      "mean_abs_vv_error_ms": 69.2,
+      "n_patients": 75.0
+    },
+    "cnn_best_epoch": 3,
+    "cnn_params": 2412,
+    "cnn_epochs": 30
+  },
+  {
+    "n_train_patients": 80,
+    "linear": {
+      "exact_argmax_accuracy": 0.2,
+      "near_optimal_fraction": 0.6266666666666667,
+      "top3_hit": 0.41333333333333333,
+      "mean_regret": 0.019775349411318244,
+      "median_regret": 0.010869598577984307,
+      "mean_spearman": 0.9309273182957393,
+      "mean_abs_av_error_ms": 45.06666666666667,
+      "mean_abs_vv_error_ms": 7.2,
+      "n_patients": 75.0
+    },
+    "cnn": {
+      "exact_argmax_accuracy": 0.0,
+      "near_optimal_fraction": 0.0,
+      "top3_hit": 0.12,
+      "mean_regret": 0.19075139634353364,
+      "median_regret": 0.18248865717404675,
+      "mean_spearman": 0.4838933697881067,
+      "mean_abs_av_error_ms": 36.93333333333333,
+      "mean_abs_vv_error_ms": 66.0,
+      "n_patients": 75.0
+    },
+    "cnn_best_epoch": 3,
+    "cnn_params": 2412,
+    "cnn_epochs": 30
+  },
+  {
+    "n_train_patients": 150,
+    "linear": {
+      "exact_argmax_accuracy": 0.2,
+      "near_optimal_fraction": 0.64,
+      "top3_hit": 0.49333333333333335,
+      "mean_regret": 0.018711960995495474,
+      "median_regret": 0.009233237280524876,
+      "mean_spearman": 0.9342383230804284,
+      "mean_abs_av_error_ms": 47.46666666666667,
+      "mean_abs_vv_error_ms": 6.8,
+      "n_patients": 75.0
+    },
+    "cnn": {
+      "exact_argmax_accuracy": 0.02666666666666667,
+      "near_optimal_fraction": 0.14666666666666667,
+      "top3_hit": 0.12,
+      "mean_regret": 0.16544658704643977,
+      "median_regret": 0.18257981761951314,
+      "mean_spearman": 0.4945454545454545,
+      "mean_abs_av_error_ms": 37.06666666666667,
+      "mean_abs_vv_error_ms": 54.8,
+      "n_patients": 75.0
+    },
+    "cnn_best_epoch": 13,
+    "cnn_params": 2412,
+    "cnn_epochs": 30
+  },
+  {
+    "n_train_patients": 350,
+    "linear": {
+      "exact_argmax_accuracy": 0.21333333333333335,
+      "near_optimal_fraction": 0.64,
+      "top3_hit": 0.48,
+      "mean_regret": 0.018029150140769286,
+      "median_regret": 0.009073116630001049,
+      "mean_spearman": 0.9341152882205513,
+      "mean_abs_av_error_ms": 47.06666666666667,
+      "mean_abs_vv_error_ms": 6.8,
+      "n_patients": 75.0
+    },
+    "cnn": {
+      "exact_argmax_accuracy": 0.02666666666666667,
+      "near_optimal_fraction": 0.10666666666666667,
+      "top3_hit": 0.09333333333333334,
+      "mean_regret": 0.1560648570068888,
+      "median_regret": 0.15636488574089272,
+      "mean_spearman": 0.38391433128275226,
+      "mean_abs_av_error_ms": 62.13333333333333,
+      "mean_abs_vv_error_ms": 51.6,
+      "n_patients": 75.0
+    },
+    "cnn_best_epoch": 12,
+    "cnn_params": 2412,
+    "cnn_epochs": 30
+  }
+]

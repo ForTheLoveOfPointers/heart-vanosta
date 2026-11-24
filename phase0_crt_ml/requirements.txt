@@ -1,0 +1,21 @@
+# Entorno de la corrida reportada: Python 3.12 (ver REPRODUCING.md).
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.6
+pyyaml>=6.0
+
+# Suite de tests.
+pytest>=8.0
+
+# Necesario para la escalera de modelos (LambdaMART e híbridos).
+lightgbm>=4.0
+
+# Necesario para la CNN y los embeddings de la escalera completa.
+# CPU en Linux:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+# macOS: pip install torch
+# torch>=2.4
+
+# pyCircAdapt no está en PyPI. Instalarlo con:
+#   bash scripts/setup_circadapt.sh
+# (o instalar el wheel de https://framework.circadapt.org/ en un venv)
